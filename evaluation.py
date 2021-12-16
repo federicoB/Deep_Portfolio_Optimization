@@ -1,11 +1,12 @@
 # several methods for evaluating and plotting models performane
 
+import math
+
 import matplotlib.pyplot as plt
-from matplotlib.pyplot import figure
 import numpy as np
 import pandas as pd
-import math
 from tensorflow import keras
+
 from utils import sequentialize
 
 
@@ -49,15 +50,24 @@ def multiple_period_evaluation(untrained_model,data,best_alloc,strategy_daily_re
     alloc = model1.predict(x_val)
     alloc = pd.DataFrame(alloc,columns=strategy_daily_returns.columns,index=val_dates[seq_lenght:])
     perf_val1 = get_comulated_returns(alloc,strategy_daily_returns)[0][1][-1]
-    
+
     if plots:
-        alloc.plot(figsize=(12,8))
+        alloc.plot(figsize=(12, 8), fontsize=18)
+        plt.ylabel('Weights', fontsize=20)
+        plt.grid()
         plt.show()
-        plot_comulated_returns(alloc,strategy_daily_returns.loc[(strategy_daily_returns.index >= '2020-01-01') & (strategy_daily_returns.index <= '2020-12-31')],target_alloc=best_alloc,equal_allocation=True, risk_parity=True, inverse_volatility=True)
+        plot_comulated_returns(alloc, strategy_daily_returns.loc[
+            (strategy_daily_returns.index >= '2020-01-01') & (strategy_daily_returns.index <= '2020-12-31')],
+                               target_alloc=best_alloc, equal_allocation=True, risk_parity=True,
+                               inverse_volatility=True)
         plt.show()
-        plot_comulated_returns(alloc,strategy_daily_returns.loc[(strategy_daily_returns.index <= '2019-12-31') & (strategy_daily_returns.index >= '2019-01-01')],target_alloc=best_alloc,equal_allocation=True, risk_parity=True, inverse_volatility=True)
-        plt.show() 
-        plot_sharpes(seq_lenght,alloc,strategy_daily_returns,target_alloc=best_alloc,equal_allocation=True,risk_parity=True, inverse_volatility=True)
+        plot_comulated_returns(alloc, strategy_daily_returns.loc[
+            (strategy_daily_returns.index <= '2019-12-31') & (strategy_daily_returns.index >= '2019-01-01')],
+                               target_alloc=best_alloc, equal_allocation=True, risk_parity=True,
+                               inverse_volatility=True)
+        plt.show()
+        plot_sharpes(seq_lenght, alloc, strategy_daily_returns, target_alloc=best_alloc, equal_allocation=True,
+                     risk_parity=True, inverse_volatility=True)
 
     # train on 2015-2020 and evaluate in 2014
     train_data = data.iloc[data.index >= '2015-01-01'].values
